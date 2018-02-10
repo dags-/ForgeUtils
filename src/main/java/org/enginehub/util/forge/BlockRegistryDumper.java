@@ -13,24 +13,17 @@ import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraftforge.fml.common.FMLLog;
-import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
-import net.minecraftforge.fml.common.registry.GameData;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
@@ -50,13 +43,8 @@ public class BlockRegistryDumper {
     public void run() throws Exception {
         List<Map<String, Object>> list = new LinkedList<Map<String, Object>>();
 
-        FMLControlledNamespacedRegistry<Block> registry = GameData.getBlockRegistry();
-        Map map = (Map) getField(registry, registry.getClass().getSuperclass().getSuperclass(), "inverseObjectRegistry", "field_148758_b");
-        if (map == null) {
-            throw new Exception("Couldn't find map field from registry.");
-        }
-        for (Entry e : (Iterable<Entry>) map.entrySet()) {
-            list.add(getProperties(e));
+        for (Map.Entry<ResourceLocation, Block> entry : ForgeRegistries.BLOCKS.getEntries()) {
+            list.add(getProperties(entry));
         }
 
         Collections.sort(list, new MapComparator());
@@ -67,9 +55,9 @@ public class BlockRegistryDumper {
 
     private Map<String, Object> getProperties(Entry e) {
         Map<String, Object> map = new LinkedHashMap<String, Object>();
-        Block b = (Block) e.getKey();
+        Block b = (Block) e.getValue();
         map.put("legacyId", Block.getIdFromBlock(b));
-        map.put("id", e.getValue().toString());
+        map.put("id", e.getKey().toString());
         map.put("unlocalizedName", b.getUnlocalizedName());
         map.put("localizedName", b.getLocalizedName());
         map.put("states", getStates(b));
