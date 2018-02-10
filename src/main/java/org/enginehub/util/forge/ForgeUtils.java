@@ -18,9 +18,7 @@ public class ForgeUtils {
         FMLLog.info("ForgeUtils loading.");
 
         try {
-            if ("true".equalsIgnoreCase(System.getProperty("enginehub.dumpblocks"))) {
-                (new BlockRegistryDumper(new File("blocks.json"))).run();
-            }
+            (new BlockRegistryDumper(new File("blocks.json"))).run();
         } catch (Exception e) {
             FMLLog.severe("Error running block registry dumper: " +  e);
             e.printStackTrace();
