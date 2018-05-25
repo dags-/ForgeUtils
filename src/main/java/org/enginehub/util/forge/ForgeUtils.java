@@ -1,6 +1,9 @@
 package org.enginehub.util.forge;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -18,9 +21,12 @@ public class ForgeUtils {
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        Set<String> ids = new HashSet<>();
+        Collections.addAll(ids, "com.boydti.fawe", "fastasyncworldedit", "FastAsyncWorldEdit");
+
         File configDir = event.getModConfigurationDirectory();
         for (ModContainer mod : Loader.instance().getActiveModList()) {
-            if (mod.getModId().equals("fastasyncworldedit")) {
+            if (ids.contains(mod.getModId()) || ids.contains(mod.getName())) {
                 FMLLog.info("Detected FAWE");
                 File dir = new File(configDir, "FastAsyncWorldEdit");
                 if (!dir.exists() && !dir.mkdirs()) {
