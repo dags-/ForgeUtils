@@ -1,35 +1,46 @@
 package org.enginehub.util.forge;
 
+import java.io.File;
 import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-
-import java.io.File;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 @Mod(modid = ForgeUtils.MODID, name = "Forge Utils", version = "%VERSION%", acceptableRemoteVersions = "*")
-@SuppressWarnings("ALL")
 public class ForgeUtils {
+
     public static final String MODID = "forgeutils";
 
-    @EventHandler
-    public void init(FMLPostInitializationEvent event) {
-        FMLLog.info("ForgeUtils loading.");
+    private File blockData = new File("blocks.json");
 
-        try {
-            (new BlockRegistryDumper(new File("blocks.json"))).run();
-        } catch (Exception e) {
-            FMLLog.severe("Error running block registry dumper: " +  e);
-            e.printStackTrace();
+    @EventHandler
+    public void preInit(FMLPreInitializationEvent event) {
+        File configDir = event.getModConfigurationDirectory();
+        for (ModContainer mod : Loader.instance().getActiveModList()) {
+            if (mod.getModId().equals("fastasyncworldedit")) {
+                File dir = new File(configDir, "FastAsyncWorldEdit");
+                if (!dir.exists() && !dir.mkdirs()) {
+                    FMLLog.warning("Unable to create FAWE config dir.");
+                    return;
+                }
+                blockData = new File(dir, "extrablocks.json");
+                break;
+            }
         }
     }
 
     @EventHandler
-    public void serverLoad(FMLServerStartingEvent event) {
-        if ("true".equalsIgnoreCase(System.getProperty("enginehub.beanshell"))) {
-            FMLLog.info("ForgeUtils registering BeanShellCommand!");
-            event.registerServerCommand(new BeanShellCommand());
+    public void postInit(FMLPostInitializationEvent event) {
+        FMLLog.info("ForgeUtils loading.");
+
+        try {
+            new BlockRegistryDumper(blockData).run();
+        } catch (Exception e) {
+            FMLLog.severe("Error running block registry dumper: " +  e);
+            e.printStackTrace();
         }
     }
 }
