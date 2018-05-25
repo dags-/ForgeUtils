@@ -26,7 +26,7 @@ apply plugin: 'com.github.johnrengelman.shadow'
 
 group = 'org.enginehub'
 version = '1.0'
-archivesBaseName = 'ForgeUtils'
+archivesBaseName = 'FAWEUtils'
 
 minecraft {
     version = mcversion + "-" + forgeversion
