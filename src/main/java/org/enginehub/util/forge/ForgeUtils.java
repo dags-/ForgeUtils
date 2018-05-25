@@ -21,6 +21,7 @@ public class ForgeUtils {
         File configDir = event.getModConfigurationDirectory();
         for (ModContainer mod : Loader.instance().getActiveModList()) {
             if (mod.getModId().equals("fastasyncworldedit")) {
+                FMLLog.info("Detected FAWE");
                 File dir = new File(configDir, "FastAsyncWorldEdit");
                 if (!dir.exists() && !dir.mkdirs()) {
                     FMLLog.warning("Unable to create FAWE config dir.");
@@ -37,6 +38,7 @@ public class ForgeUtils {
         FMLLog.info("ForgeUtils loading.");
 
         try {
+            FMLLog.info("Dumping block data to: " + blockData);
             new BlockRegistryDumper(blockData).run();
         } catch (Exception e) {
             FMLLog.severe("Error running block registry dumper: " +  e);
