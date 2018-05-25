@@ -13,7 +13,6 @@ buildscript {
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.2'
     }
     ext {
         forgeversion = "14.23.2.2611"
@@ -22,7 +21,6 @@ buildscript {
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
-apply plugin: 'com.github.johnrengelman.shadow'
 
 group = 'org.enginehub'
 version = '1.1'
@@ -37,10 +35,6 @@ minecraft {
     replaceIn "org/enginehub/util/forge/ForgeUtils.java"
 
     mappings = "snapshot_20161119"
-}
-
-dependencies {
-    compile group: 'com.google.code.gson', name: 'gson', version:'2.3.1'
 }
 
 processResources {
@@ -65,17 +59,8 @@ processResources {
     }
 }
 
-shadowJar {
-    dependencies {
-        exclude 'net/minecraftforge/**'
-        exclude 'dummyThing'
-        exclude 'Gradle*'
-        exclude '.cache'
-    }
-}
-
 reobf {
-    shadowJar {
+    jar {
         mappingType = 'SEARGE'
     }
 }
@@ -88,5 +73,3 @@ task deobfJar(type: Jar) {
 artifacts {
     archives deobfJar
 }
-
-build.dependsOn(shadowJar)
